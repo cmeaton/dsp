@@ -69,15 +69,69 @@ Cohen's D is an example of effect size.  Other examples of effect size are:  cor
 
 You will see effect size again and again in results of algorithms that are run in data science.  For instance, in the bootcamp, when you run a regression analysis, you will recognize the t-statistic as an example of effect size.
 
+### Code:
+CohenEffectSize(firsts.prglngth, others.prglngth)
+CohenEffectSize(firsts.totalwgt_lb, others.totalwgt_lb)
+
+### Answer:
+
+Prglngth diff first - others: 0.028879044654449883
+Totalwgt_lb first - others: -0.088672927072602006
+
+Cohen's Effect Size between the total weight of first born babies to all other babies is -.088. This means that the first born baby mean total weight is -.088 standard deviations smaller than the other baby mean total weight. This is close to an opposite effect size between pregnancy length for first born and other babies, which was .028, indicating that the mean pregnancy lengths for first borns is .028 standard deviations larger than that of lengths for other babies. Overall, the data is indicating a potential for pregnancy lengths to be longer and and weights smaller for first borns, however the effect size is very small.
+
 ### Q2. [Think Stats Chapter 3 Exercise 1](statistics/3-1-actual_biased.md) (actual vs. biased)
 This problem presents a robust example of actual vs biased data.  As a data scientist, it will be important to examine not only the data that is available, but also the data that may be missing but highly relevant.  You will see how the absence of this relevant data will bias a dataset, its distribution, and ultimately, its statistical interpretation.
+
+### Code:
+resp = nsfg.ReadFemResp()
+pmf = thinkstats2.Pmf(resp.numkdhh, label='numkdhh')
+biased = BiasPmf(pmf, label='biased')
+
+thinkplot.Pmfs([pmf, biased])
+thinkplot.Config(xlabel='Number of children', ylabel='PMF')
+
+pmf.Mean()
+biased.mean()
+
+### Answer:
+actual mean = 1.024205155043831
+biased mean = 2.403679100664282
+
+The actual mean number of children per family is 1.02, which takes into account families that do not have children. The actual distribution is skewed heavily towards 0, meaning that most families have 0 children, and as number of children increases, the frequency decreases.
+
+The biased mean number of children per family is 2.40, which takes into account only the families that have children and exhibits a normal distribution.
+
+When comparing the actual and biased means and their distribution, it can be observed that most families do not have children, but for those that do have children, most have 2.40.
 
 ### Q3. [Think Stats Chapter 4 Exercise 2](statistics/4-2-random_dist.md) (random distribution)  
 This questions asks you to examine the function that produces random numbers.  Is it really random?  A good way to test that is to examine the pmf and cdf of the list of random numbers and visualize the distribution.  If you're not sure what pmf is, read more about it in Chapter 3.  
 
+### Code:
+t = np.random.random(1000)
+
+pmf = thinkstats2.Pmf(t)
+thinkplot.Pmf(pmf, linewidth=0.1)
+thinkplot.Config(xlabel='Random variate', ylabel='PMF')
+
+cdf = thinkstats2.Cdf(t)
+thinkplot.Cdf(cdf)
+thinkplot.Config(xlabel='Random variate', ylabel='CDF')
+
+### Answer:
+While plotting the PMF is not a helpful tool in understanding the distrubition of the 1000 randomly generated numbers, plotting the CDF clearly illustrates a uniform distribution.
+
 ### Q4. [Think Stats Chapter 5 Exercise 1](statistics/5-1-blue_men.md) (normal distribution of blue men)
 This is a classic example of hypothesis testing using the normal distribution.  The effect size used here is the Z-statistic. 
 
+### Code:
+low = dist.cdf(177.8)    
+high = dist.cdf(185.4)   
+dif = high-low
+dif
+
+### Answer:
+34% of the U.S. male population is between 5'10" and 6'1".
 
 
 ### Q5. Bayesian (Elvis Presley twin) 
@@ -86,14 +140,30 @@ Bayes' Theorem is an important tool in understanding what we really know, given 
 
 Elvis Presley had a twin brother who died at birth.  What is the probability that Elvis was an identical twin? Assume we observe the following probabilities in the population: fraternal twin is 1/125 and identical twin is 1/300.  
 
->> REPLACE THIS TEXT WITH YOUR RESPONSE
+P(H) = 1/300
+P(E|H) = 1/2
+Sample set for twins = BB, GG, BG, GB
+P(E) = (1/2 * 1/300) + (1/4 * 125)
 
----
+P(H|E) = (1/2 * 1/300) / (1/2 * 1/300) + (1/4 * 1/125)
+P(H|E) = .44 or 11/25.
 
 ### Q6. Bayesian &amp; Frequentist Comparison  
 How do frequentist and Bayesian statistics compare?
 
->> REPLACE THIS TEXT WITH YOUR RESPONSE
+Frequentist and Bayesian statistics have a similar end goal, both attempting to predict the probabilty of an event occuring. However in doing so, each theory has unique methods and treats probability differently. For example, if one is looking to predict the probabilty of a chef (let's call him Steve) in a kitchen overcooking chicken, a frequentist and a bayesian would approach the problem differently. The frequentist will be unable to attach a probability of the hypothesis that chicken will be overcooked a certain percentage of time. Instead, a frequentist approach would need to infer the frequency of overcooking chicken based off of actual data that reports on chicken being overcooked or not by Steve. The percentage of overcooked chicken out of the whole data set of chicken being cooked will be the frequency of the event occuring, so if 50 chickens are overcooked out of 100 chickens cooked by Steve, then there is a 50% probabilty that chicken will be overcooked by Steve. Note that frequentist methods only occur with repeatable random events, not non-repeatable events such as a certain candidate winning an election.
+
+Using Bayesian methods, the problem illustrated above would be approached differently. First, probabilty would be detached from frequency of occurance and always be treated as a random event. In other words, even if the historical frequency of overcooking chicken for Steve is 70%, the event is still subject to randomness which must be taken into account. To keep with the example, if it is observed that 50 chickens are overcooked out of 100 by Steve. However, we will also take into account that historically 10% of all chickens cooked by chefs in the kitchen are overcooked, and that the sample set for this is undercooked, cooked, or overcooked (meaning the result can be 1 of 3 options). The Bayesian approach would be as follows:
+
+(P(H|E) = P(H) * (P(E|H) / (P(E)
+
+P(H) = prob. Steve overcooks chicken (.50)
+P(E) = prob. chicken is overcooked in kitchen (.10)
+P(E|H) = prob. of chicken being overcooked in general (.333)
+
+P(H|E) = .333 * .5 / (.333 * .5) + .1 = .62 = 62%
+
+The two methods come to different probabilities that Steve will overcook chicken. The frequentist approach yields a 50% probability, objectively assuming that predicting Steve's future cooking can only be done so based off his past cooking. The Bayesian approach yields a 62% probabilty, using some subjectivity to assume that while Steve's past cooking will influence his future cooking, we also must factor in broader variables regarding cooking chicken that may influence Steve.
 
 ---
 
@@ -102,10 +172,39 @@ How do frequentist and Bayesian statistics compare?
 The following exercises are optional, but we highly encourage you to complete them if you have the time.
 
 ### Q7. [Think Stats Chapter 7 Exercise 1](statistics/7-1-weight_vs_age.md) (correlation of weight vs. age)
-In this exercise, you will compute the effect size of correlation.  Correlation measures the relationship of two variables, and data science is about exploring relationships in data.    
+
+### Question: 
+
+Using data from the NSFG, make a scatter plot of birth weight versus mother’s age. Plot percentiles of birth weight versus mother’s age. Compute Pearson’s and Spearman’s correlations. How would you characterize the relationship between these variables?
+
+### Code:
+
+def ScatterPlot(ages, weights, alpha=1.0, s=20):
+    thinkplot.Scatter(ages, weights, alpha=alpha)
+    thinkplot.Config(xlabel='Age (years)',
+                     ylabel='Birth weight (lbs)',
+                     xlim=[10, 45],
+                     ylim=[0, 15],
+                     legend=False)
+    
+ScatterPlot(ages, weights, alpha=0.05, s=10)
+
+Corr(ages, weights)
+SpearmanCorr(ages, weights)
+
+### Answer:
+
+Pearson's Correlation is .06 and Spearman's Correlation is .09. The difference between them indicates some effect from outliers, yet both values are low enough that no strong relationship exists between mother age and birth weight, which the scatter plot reflects.  
+
 
 ### Q8. [Think Stats Chapter 8 Exercise 2](statistics/8-2-sampling_dist.md) (sampling distribution)
 In the theoretical world, all data related to an experiment or a scientific problem would be available.  In the real world, some subset of that data is available.  This exercise asks you to take samples from an exponential distribution and examine how the standard error and confidence intervals vary with the sample size.
+
+### Question:
+
+Suppose you draw a sample with size n=10 from an exponential distribution with λ=2. Simulate this experiment 1000 times and plot the sampling distribution of the estimate L. Compute the standard error of the estimate and the 90% confidence interval.
+
+Repeat the experiment with a few different values of n and make a plot of standard error versus n.
 
 ### Q9. [Think Stats Chapter 6 Exercise 1](statistics/6-1-household_income.md) (skewness of household income)
 ### Q10. [Think Stats Chapter 8 Exercise 3](statistics/8-3-scoring.md) (scoring)
